@@ -1,14 +1,14 @@
-// CurrencySwapForm.tsx (React Component in TypeScript)
-import { useState, useEffect } from "react";
+// CurrencySwapForm.tsx (Optimized React Component in TypeScript)
+import { useState, useEffect, useCallback } from "react";
 import CurrencySelect from "./ui/currencySelect";
 import AmountInput from "./ui/amountInput";
 import SwapButton from "./ui/swapButton";
 
 export default function CurrencySwapForm() {
   // State variables for currency selections and conversion
-  const [fromCurrency, setFromCurrency] = useState<string>("USD");
-  const [toCurrency, setToCurrency] = useState<string>("EUR");
-  const [amount, setAmount] = useState<string>("");
+  const [fromCurrency, setFromCurrency] = useState("USD");
+  const [toCurrency, setToCurrency] = useState("ETH");
+  const [amount, setAmount] = useState("");
   const [convertedAmount, setConvertedAmount] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [exchangeRates, setExchangeRates] = useState<Record<string, number>>({});
@@ -16,31 +16,30 @@ export default function CurrencySwapForm() {
 
   // Fetch exchange rates from API and select the most recent price for each currency
   useEffect(() => {
-    fetch("https://interview.switcheo.com/prices.json")
-      .then((response) => response.json())
-      .then((data) => {
+    const fetchExchangeRates = async () => {
+      try {
+        const response = await fetch("https://interview.switcheo.com/prices.json");
+        const data = await response.json();
         const rates: Record<string, number> = {};
-        const availableCurrencies: Set<string> = new Set();
+        const availableCurrencies = new Set<string>();
         
-        data.forEach((item: { currency: string; price: number; date: string }) => {
-          const existing = rates[item.currency];
-          const itemDate = new Date(item.date).getTime();
-          const existingDate = existing ? new Date(existing.date).getTime() : 0;
-          
-          if (!existing || itemDate > existingDate) {
-            rates[item.currency] = item.price;
-            availableCurrencies.add(item.currency);
-          }
+        data.forEach(({ currency, price }: { currency: string; price: number }) => {
+          rates[currency] = price;
+          availableCurrencies.add(currency);
         });
-        
+
         setExchangeRates(rates);
         setCurrencies(Array.from(availableCurrencies));
-      })
-      .catch(() => setError("Failed to fetch exchange rates"));
+      } catch {
+        setError("Failed to fetch exchange rates");
+      }
+    };
+
+    fetchExchangeRates();
   }, []);
 
   // Function to perform currency conversion
-  const handleSwap = (): void => {
+  const handleSwap = useCallback(() => {
     if (!amount || isNaN(parseFloat(amount)) || parseFloat(amount) <= 0) {
       setError("Please enter a valid positive amount");
       setConvertedAmount(null);
@@ -48,24 +47,24 @@ export default function CurrencySwapForm() {
     }
     setError(null);
 
-    const fromRate = 1 / exchangeRates[fromCurrency];
-    const toRate = 1 / exchangeRates[toCurrency];
-
+    const fromRate = exchangeRates[fromCurrency];
+    const toRate = exchangeRates[toCurrency];
     if (!fromRate || !toRate) {
       setConvertedAmount("Exchange rate not available");
       return;
     }
     
-    const result = ((parseFloat(amount) / fromRate) * toRate).toFixed(2);
+    // Convert amount from fromCurrency to USD, then to toCurrency
+    const result = ((parseFloat(amount) * fromRate) / toRate).toFixed(6);
     setConvertedAmount(`${amount} ${fromCurrency} = ${result} ${toCurrency}`);
-  };
+  }, [amount, fromCurrency, toCurrency, exchangeRates]);
 
   // Function to reverse currency selection and reset conversion result
-  const handleReverse = (): void => {
+  const handleReverse = useCallback(() => {
     setFromCurrency(toCurrency);
     setToCurrency(fromCurrency);
     setConvertedAmount(null);
-  };
+  }, [fromCurrency, toCurrency]);
 
   return (
     <div className="max-w-md mx-auto p-4 shadow-lg rounded-2xl bg-white">
