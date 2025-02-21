@@ -8,7 +8,7 @@ interface SwapButtonProps {
 
 const SwapButton: React.FC<SwapButtonProps> = ({ onClick }) => {
   return (
-    <button className="p-2 bg-gray-200 rounded-full hover:bg-gray-300" onClick={onClick}>
+    <button className="p-2 mt-4 bg-gray-200 rounded-full hover:bg-gray-300" onClick={onClick}>
       <ArrowLeftRight className="w-5 h-5" />
     </button>
   );
