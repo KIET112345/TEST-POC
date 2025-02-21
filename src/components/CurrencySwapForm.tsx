@@ -13,6 +13,7 @@ export default function CurrencySwapForm() {
   const [error, setError] = useState<string | null>(null);
   const [exchangeRates, setExchangeRates] = useState<Record<string, number>>({});
   const [currencies, setCurrencies] = useState<string[]>([]);
+  const [currencyImages, setCurrencyImages] = useState<Record<string, string>>({});
 
   // Fetch exchange rates from API and select the most recent price for each currency
   useEffect(() => {
@@ -38,6 +39,21 @@ export default function CurrencySwapForm() {
     fetchExchangeRates();
   }, []);
 
+  // Function to fetch and set currency images
+  useEffect(() => {
+    const fetchCurrencyImages = async () => {
+      const images: Record<string, string> = {};
+      currencies.forEach((currency) => {
+        images[currency] = `/images/currencies/${currency.toLowerCase()}.svg`; // Assuming images are stored in public/images/currencies/
+      });
+      setCurrencyImages(images);
+    };
+
+    if (currencies.length > 0) {
+      fetchCurrencyImages();
+    }
+  }, [currencies]);
+
   // Function to perform currency conversion
   const handleSwap = useCallback(() => {
     if (!amount || isNaN(parseFloat(amount)) || parseFloat(amount) <= 0) {
@@ -49,6 +65,7 @@ export default function CurrencySwapForm() {
 
     const fromRate = exchangeRates[fromCurrency];
     const toRate = exchangeRates[toCurrency];
+
     if (!fromRate || !toRate) {
       setConvertedAmount("Exchange rate not available");
       return;
@@ -70,9 +87,9 @@ export default function CurrencySwapForm() {
     <div className="max-w-md mx-auto p-4 shadow-lg rounded-2xl bg-white">
       <h2 className="text-xl font-semibold text-center">Currency Swap</h2>
       <div className="flex items-center gap-2 mt-4">
-        <CurrencySelect label="From" value={fromCurrency} onChange={setFromCurrency} currencies={currencies} />
+        <CurrencySelect label="From" value={fromCurrency} onChange={setFromCurrency} currencies={currencies} currencyImages={currencyImages} showImages={true} />
         <SwapButton onClick={handleReverse} />
-        <CurrencySelect label="To" value={toCurrency} onChange={setToCurrency} currencies={currencies} />
+        <CurrencySelect label="To" value={toCurrency} onChange={setToCurrency} currencies={currencies} currencyImages={currencyImages} showImages = {true} />
       </div>
       
       <AmountInput value={amount} onChange={setAmount} />
