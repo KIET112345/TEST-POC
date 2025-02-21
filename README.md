@@ -1,5 +1,5 @@
 ### FE TASK:
-## List out the computational inefficiencies and anti-patterns found in the code block below
+## List out the computational inefficiencies and anti-patterns found in the code block below [badcode](FE-1/badcode.tsx)
 1. Incorrect Filtering logic:
 The filtering logic in sortedBalances is incorrect. The variable lhsPriority is not defined, and the condition if (lhsPriority > -99) should be if (balancePriority > -99)
 
@@ -25,4 +25,4 @@ The map function is used twice on sortedBalances to create formattedBalances and
 The getPriority function is used inside useMemo, but it is not included in dependency array. This can lead to state closure
 
 ## Refactored version of the code
-The refactored version of the code present at [refactor](./refactor.tsx)
+The refactored version of the code present at [refactor](FE-1/refactor.tsx)
