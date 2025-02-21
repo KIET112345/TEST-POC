@@ -1,50 +1,28 @@
-# React + TypeScript + Vite
+### FE TASK:
+## List out the computational inefficiencies and anti-patterns found in the code block below
+1. Incorrect Filtering logic:
+The filtering logic in sortedBalances is incorrect. The variable lhsPriority is not defined, and the condition if (lhsPriority > -99) should be if (balancePriority > -99)
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+2. Unneccessary Filter:
+The filtering logic checks if balance.amount <= 0 and returns true, which meams it includes balances with amounts less less than or equal to 0. This seems counterintutive as typically, you would filter out such balances
 
-Currently, two official plugins are available:
+3. Redundant Sorting:
+The sorting logic in sortedBalances is redundant because it sorts balances that have already been filtered to include only those with amounts less than or equal 0. This sorting operation is unnecessary and compulationally expensive
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+4. Inefficient Use of useMemo:
+The useMemo hook is used to memoize sortedBalances,but the dependencies include prices, which is not used in the compulation of sortedBalances. This can lead to unnecessary recomputations
 
-## Expanding the ESLint configuration
+5. incorrect Type for balance in rows:
+The balance in the rows mapping is typed as FormattedWalletBalance, but it should be WalletBalance since the sortedBalances contains WalletBalance objects
 
-If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
+6. Unnecessary Mapping:
+The formattedBalances mapping is unnecessary because sortedBalances can be directly used to create rows
 
-- Configure the top-level `parserOptions` property like this:
+7. Potential Performance Issue with map:
+The map function is used twice on sortedBalances to create formattedBalances and rows. This can be optimized to a single map operation
 
-```js
-export default tseslint.config({
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
-```
+8. Missing dependency in useMemo:
+The getPriority function is used inside useMemo, but it is not included in dependency array. This can lead to state closure
 
-- Replace `tseslint.configs.recommended` to `tseslint.configs.recommendedTypeChecked` or `tseslint.configs.strictTypeChecked`
-- Optionally add `...tseslint.configs.stylisticTypeChecked`
-- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and update the config:
-
-```js
-// eslint.config.js
-import react from 'eslint-plugin-react'
-
-export default tseslint.config({
-  // Set the react version
-  settings: { react: { version: '18.3' } },
-  plugins: {
-    // Add the react plugin
-    react,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended rules
-    ...react.configs.recommended.rules,
-    ...react.configs['jsx-runtime'].rules,
-  },
-})
-```
+## Refactored version of the code
+The refactored version of the code present at [refactor](./refactor.tsx)
