@@ -1,6 +1,7 @@
-// CurrencySelect.tsx (Dropdown component with currency images)
-import { Currency } from "lucide-react";
+// CurrencySelect.tsx (Using Radix UI for better styling and interaction)
 import React from "react";
+import * as Select from "@radix-ui/react-select";
+import { ChevronDownIcon } from "@radix-ui/react-icons";
 
 interface CurrencySelectProps {
   label: string;
@@ -8,7 +9,6 @@ interface CurrencySelectProps {
   onChange: (currency: string) => void;
   currencies: string[];
   currencyImages: Record<string, string>;
-  showImages?: boolean;
 }
 
 const CurrencySelect: React.FC<CurrencySelectProps> = ({
@@ -17,37 +17,39 @@ const CurrencySelect: React.FC<CurrencySelectProps> = ({
   onChange,
   currencies,
   currencyImages,
-  showImages = false,
 }) => {
-  currencies.forEach( currency => {
-  console.log(currencyImages[currency])
-
-  })
   return (
-    <div className="flex flex-col w-full">
-      <label className="text-sm font-medium mb-1">{label}</label>
-      <select
-        value={value}
-        onChange={(e) => onChange(e.target.value)}
-        className="p-2 border rounded w-full"
-      >
-        {currencies.map((currency) => (
-          <option key={currency} value={currency}>
-            {showImages && currencyImages[currency] ? (
-              <span className="flex items-center gap-2">
-                <img
-                  src={currencyImages[currency]}
-                  alt={currency}
-                  className="w-5 h-5 inline"
-                />
-                {currency}
-              </span>
-            ) : (
-              currency
-            )}
-          </option>
-        ))}
-      </select>
+    <div className="w-full">
+      <label className="text-sm font-medium mb-1 block">{label}</label>
+      <Select.Root value={value} onValueChange={onChange}>
+        <Select.Trigger className="p-2 border rounded w-full flex items-center justify-between">
+          <Select.Value>
+            <span className="flex items-center gap-2">
+              <img src={currencyImages[value]} alt={value} className="w-5 h-5" />
+              {value}
+            </span>
+          </Select.Value>
+          <Select.Icon>
+            <ChevronDownIcon className="w-5 h-5" />
+          </Select.Icon>
+        </Select.Trigger>
+        <Select.Portal>
+          <Select.Content className="bg-white border rounded shadow-md z-10">
+            <Select.Viewport>
+              {currencies.map((currency) => (
+                <Select.Item
+                  key={currency}
+                  value={currency}
+                  className="p-2 hover:bg-gray-100 flex items-center gap-2 cursor-pointer"
+                >
+                  <img src={currencyImages[currency]} alt={currency} className="w-5 h-5" />
+                  <Select.ItemText>{currency}</Select.ItemText>
+                </Select.Item>
+              ))}
+            </Select.Viewport>
+          </Select.Content>
+        </Select.Portal>
+      </Select.Root>
     </div>
   );
 };

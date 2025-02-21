@@ -87,9 +87,9 @@ export default function CurrencySwapForm() {
     <div className="max-w-md mx-auto p-4 shadow-lg rounded-2xl bg-white">
       <h2 className="text-xl font-semibold text-center">Currency Swap</h2>
       <div className="flex items-center gap-2 mt-4">
-        <CurrencySelect label="From" value={fromCurrency} onChange={setFromCurrency} currencies={currencies} currencyImages={currencyImages} showImages={true} />
+        <CurrencySelect label="From" value={fromCurrency} onChange={setFromCurrency} currencies={currencies} currencyImages={currencyImages}/>
         <SwapButton onClick={handleReverse} />
-        <CurrencySelect label="To" value={toCurrency} onChange={setToCurrency} currencies={currencies} currencyImages={currencyImages} showImages = {true} />
+        <CurrencySelect label="To" value={toCurrency} onChange={setToCurrency} currencies={currencies} currencyImages={currencyImages}/>
       </div>
       
       <AmountInput value={amount} onChange={setAmount} />
