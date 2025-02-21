@@ -18,7 +18,7 @@ const CurrencySelect: React.FC<CurrencySelectProps> = ({
   currencies,
   currencyImages,
 }) => {
-  return (
+    return (
     <div className="w-full">
       <label className="text-sm font-medium mb-1 block">{label}</label>
       <Select.Root value={value} onValueChange={onChange}>
